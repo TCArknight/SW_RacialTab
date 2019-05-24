@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains the definitions of components that don't really fit anywhere
+      else, such as resources, journal entries, etc.
+-->
+
+<document signature="Hero Lab Structure">
+
+  <!-- TCA - This component is a helper component for various Racial expressions/choosers -->
+  <component
+    id="RacialHelper"
+    name="Racial Helper">
+    <field
+      id="rhIndex"
+      name="Index"
+      type="derived"
+	  defvalue="0">
+	  </field>
+	  
+    <field
+      id="rhEdgeAdd"
+      name="Racial Edge AddItem Header"
+      type="derived"
+	  maxlength="500">
+	  </field>
+	  
+    <field
+      id="rhEdgeHdr"
+      name="Racial Edge Expression Header"
+      type="derived"
+	  maxlength="500">
+	  </field> 
+	  
+    <field
+      id="rhEdgeExp"
+      name="Racial Edge Expression"
+      type="derived"
+	  maxlength="500">
+	  </field>
+	  
+    <field
+      id="rhSkillAdd"
+      name="Racial Skill AddItem Header"
+      type="derived"
+	  maxlength="500">
+	  </field>
+	  
+    <field
+      id="rhSkillHdr"
+      name="Racial Skill Header"
+      type="derived"
+	  maxlength="500">
+	  </field> 
+	  
+    <field
+      id="rhSkillExp"
+      name="Racial Skill Expression"
+      type="derived"
+	  maxlength="500">
+	  </field>
+	  
+	<eval phase="Traits" priority="1000" index="1"><![CDATA[
+	~if this fortune is not added directly to the hero (i.e. an advance), skip it entirely
+	doneif (origin.ishero = 0)
+
+	~consume additional resource slots
+	var myEdge as string
+    var mySkill as string
+	var myIndex as number
+	var myEdgeCount as number
+	var mySkillCount as number
+	
+	myIndex = field[rhIndex].value
+	myEdge = "RacialTab.EdgeSelected" & myIndex
+	mySkill = "RacialTab.SkillSelected" & myIndex
+	
+	~ Edge selections
+	foreach pick in hero where myEdge
+	  myEdgeCount += 1
+	  nexteach
+	  
+	perform #resspent[resRaceEdge1,+,myEdgeCount,field[name].text]
+	
+	~ Skill selections
+    foreach pick in hero where mySkill
+	  mySkillCount += 1
+	  nexteach
+	  
+	perform #resspent[resRaceSkill1,+,mySkillCount,field[name].text]
+
+		]]></eval>
+  
+    </component>
+	
+  </document>

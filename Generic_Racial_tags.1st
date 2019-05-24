@@ -1,0 +1,21 @@
+ <?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- This file contains all specifications pertaining to the operational control of
+      the data files. This includes usage pools, sources, sortsets, and other related
+      mechanisms.
+-->
+
+<document signature="Hero Lab Structure">
+  <!-- TCA: Tags -->
+  <group
+    id="RacialTab"
+    dynamic="yes">
+    <value id="HideRacialTab"/>  <!-- Whether an ability is selectable only during creation -->
+    <value id="EdgeSelected1"/>  <!-- Whether an ability is selectable only during creation -->
+    <value id="EdgeSelected2"/>  <!-- Whether an ability is selectable only during creation -->
+    <value id="SkillSelected1"/>  <!-- Whether an ability is selectable only during creation -->
+    <value id="SkillSelected2"/>  <!-- Whether an ability is selectable only during creation -->
+
+    </group>
+
+  </document>

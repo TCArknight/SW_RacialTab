@@ -20,13 +20,76 @@
 	
     <!-- Automatically add the helper to every actor -->
     <tag group="Helper" tag="Bootstrap"/>
+	
+	<eval phase="PreTraits" priority="10000" index="1"><![CDATA[
+	~if there are no selections on the Racial tab choosers required, then we're done.
+	var reqSel as number
+	reqSel = 0
+	reqSel += #resmax[resRaceEdge1] + #resmax[resRaceEdge2]
+	reqSel += #resmax[resRaceSkill1] + #resmax[resRaceSkill2]
+	reqSel += #resmax[resRaceSimple1] + #resmax[resRaceEdge2]
+	doneif (reqSel = 0)
 
+	~consume additional resource slots when 
+
+	~Count Edges with Rifts.FrameSel1 tag
+    foreach pick in hero from Edge where "RacialTab.EdgeSelected1"
+	  field[rhEdgeCst].value += 1
+	  nexteach
+    perform #resspent[resRaceEdge1,+,field[rhEdgeCst].value,"Race"]
+   
+	~Count Edges with Rifts.FrameSel1 tag
+    foreach pick in hero from Edge where "RacialTab.EdgeSelected2"
+	  field[rhEdgeCst2].value += 1
+	  nexteach
+    perform #resspent[resRaceEdge2,+,field[rhEdgeCst2].value,"Race"]
+
+		]]></eval>
+		
     </thing>
 	
   <!-- Racial - Bonus Abilities resource  -->
   <thing
     id="resRaceEdge1"
     name="Racial Edges 1"
+    compset="Resource">
+    <fieldval field="resMax" value="0"/>
+	
+    <!-- Automatically add the resource to every actor -->
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- If the resource is underspent, report a validation error -->
+    <evalrule index="1" phase="Validate" priority="5000" message="Resource underspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't underspent, we're valid
+      validif (field[resLeft].value <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+ 
+    <!-- If the resource is overspent, report a validation error -->
+    <evalrule index="2" phase="Validate" priority="5000" message="Resource overspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't overspent, we're valid
+      validif (field[resLeft].value >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+	  
+	</thing>
+
+  <!-- Racial - Bonus Abilities resource  -->
+  <thing
+    id="resRaceEdge2"
+    name="Racial Edges 2"
     compset="Resource">
     <fieldval field="resMax" value="0"/>
 	
@@ -98,5 +161,117 @@
 
       ]]></evalrule>	
     </thing>
+
+  <!-- Racial - Bonus Abilities resource  -->
+  <thing
+    id="resRaceSkill2"
+    name="Racial Skills 2"
+    compset="Resource">
+    <fieldval field="resMax" value="0"/>
 	
+    <!-- Automatically add the resource to every actor -->
+    <tag group="Helper" tag="Bootstrap"/>
+
+
+    <!-- If the resource is underspent, report a validation error -->
+    <evalrule index="1" phase="Validate" priority="5000" message="Resource underspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't underspent, we're valid
+      validif (field[resLeft].value <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+ 
+    <!-- If the resource is overspent, report a validation error -->
+    <evalrule index="2" phase="Validate" priority="5000" message="Resource overspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't overspent, we're valid
+      validif (field[resLeft].value >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>	
+    </thing>	
+  <!-- Racial - Bonus Abilities resource  -->
+  <thing
+    id="resRaceSimple1"
+    name="Racial Simple 1"
+    compset="Resource">
+    <fieldval field="resMax" value="0"/>
+	
+    <!-- Automatically add the resource to every actor -->
+    <tag group="Helper" tag="Bootstrap"/>
+
+
+    <!-- If the resource is underspent, report a validation error -->
+    <evalrule index="1" phase="Validate" priority="5000" message="Resource underspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't underspent, we're valid
+      validif (field[resLeft].value <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+ 
+    <!-- If the resource is overspent, report a validation error -->
+    <evalrule index="2" phase="Validate" priority="5000" message="Resource overspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't overspent, we're valid
+      validif (field[resLeft].value >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>	
+    </thing>
+
+  <!-- Racial - Bonus Abilities resource  -->
+  <thing
+    id="resRaceSimple2"
+    name="Racial Simple 2"
+    compset="Resource">
+    <fieldval field="resMax" value="0"/>
+	
+    <!-- Automatically add the resource to every actor -->
+    <tag group="Helper" tag="Bootstrap"/>
+
+
+    <!-- If the resource is underspent, report a validation error -->
+    <evalrule index="1" phase="Validate" priority="5000" message="Resource underspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't underspent, we're valid
+      validif (field[resLeft].value <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+ 
+    <!-- If the resource is overspent, report a validation error -->
+    <evalrule index="2" phase="Validate" priority="5000" message="Resource overspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't overspent, we're valid
+      validif (field[resLeft].value >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>	
+    </thing>
   </document>

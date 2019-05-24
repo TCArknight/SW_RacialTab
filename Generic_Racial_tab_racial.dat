@@ -59,6 +59,28 @@
       </table_dynamic>
     </portal>
 	
+  <!-- raChsEdge2 portal - Allows selection of Racial abilities. -->
+  <portal
+    id="raChsEdge2"
+    style="tblNormal">
+    <table_dynamic
+      component="none"
+      showtemplate="raEdgePick1"
+      choosetemplate="SimpleItem"
+	  candidatepick="RacialHelper1"
+	  candidatefield="rhEdgeExp2"
+	  headertemplate="raEdgePick1"
+	  addpick="resRaceEdge1">
+      <list>RacialTab.EdgeSelected2</list>
+      <autotag group="RacialTab" tag="EdgeSelected2"/>
+      <autotag group="Helper" tag="FreeEdge"/>
+      <description/>
+      <additem><![CDATA[      
+        @text &= hero.child[RacialHelper1].field[rhEdgeAdd2].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+	
   <!-- raChsSkill1 portal - Allows selection of Racial abilities. -->
   <portal
     id="raChsSkill1"
@@ -80,10 +102,52 @@
       </table_dynamic>
     </portal>	
 	
+  <!-- raChsSkill2 portal - Allows selection of Racial abilities. -->
+  <portal
+    id="raChsSkill2"
+    style="tblNormal">
+    <table_dynamic
+      component="none"
+      showtemplate="raSkillPick2"
+      choosetemplate="SimpleItem"
+	  candidatepick="RacialHelper1"
+	  candidatefield="rhSkillExp"
+	  headertemplate="raSkillPick2"
+	  addpick="resRaceSkill1">
+      <list>RacialTab.SkillSelected2</list>
+      <autotag group="RacialTab" tag="SkillSelected2"/>
+      <description/>
+      <additem><![CDATA[      
+        @text &= hero.child[RacialHelper1].field[rhSkillAdd2].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>	
+	
+  <!-- raChsSimple1 portal - Allows selection of Racial abilities. -->
+  <portal
+    id="raChsSimple1"
+    style="tblNormal">
+    <table_dynamic
+      component="none"
+      showtemplate="raSimplePick1"
+      choosetemplate="SimpleItem"
+	  candidatepick="RacialHelper1"
+	  candidatefield="rhSimpleExp"
+	  headertemplate="raSimplePick1"
+	  addpick="resRaceSimple1">
+      <list>RacialTab.SimpleSelected1</list>
+      <autotag group="RacialTab" tag="SimpleSelected1"/>
+      <description/>
+      <additem><![CDATA[      
+        @text &= hero.child[RacialHelper1].field[rhSimpleAdd].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>	
+	
   <template
     id="raEdgePick1"
     name="Chooser Pick"
-    compset="Simple"
+    compset="Edge"
     marginhorz="3"
     marginvert="2">
 
@@ -105,6 +169,26 @@
       <label
         field="name">
         </label>
+      </portal>
+
+    <portal
+      id="lblmenu1"
+      style="lblSecond">
+      <label
+        field="usrLabel1">
+        </label>
+      </portal>
+
+    <portal
+      id="menu1"
+      style="menuNormal">
+      <menu_things
+        field="usrChosen1"
+        component="none"
+        maxvisible="10"
+        usepicksfield="usrSource1"
+        candidatefield="usrCandid1">
+        </menu_things>
       </portal>
 	  
     <portal
@@ -147,13 +231,48 @@
       ~center the other portals vertically
       perform portal[name].centervert
       perform portal[delete].centervert
-	  
+
+      ~determine whether our portals are visible; we only show them if requested
+      ~Note: Remember that a non-empty tagexpr field indicates menu selection is used.
+      if (field[usrCandid1].isempty <> 0) then
+        portal[menu1].visible = 0
+		endif
+      if (field[usrLabel1].isempty <> 0) then
+        portal[lblmenu1].visible = 0
+		endif
+		
        ~position the delete portal on the far right
       perform portal[delete].alignedge[right,0]
 
       ~position the info portal to the left of the delete button
       perform portal[info].alignrel[rtol,delete,-8]
 
+      ~determine our effective right edge, allowing for the buttons above
+      var edge as number
+      edge = portal[info].left - 10
+
+      ~setup the default portal width and gap to be used between and around portals
+      var defwidth as number
+      var gap as number
+      defwidth = 150
+      gap = 10
+
+      ~determine the minimum amount of space we need to reserve for our portals
+      var reserve as number
+      ~if (portal[checkbox].visible <> 0) then
+      ~  reserve = defwidth
+      ~elseif (portal[menuarray].visible <> 0) then
+      ~  reserve = portal[lblmenuar].width * portal[lblmenuar].visible
+      ~  reserve += defwidth + gap
+      ~else
+	  if (portal[menu1].visible <> 0) then
+	    portal[menu1].width = 100
+        reserve = portal[lblmenu1].width * portal[lblmenu1].visible
+        reserve += defwidth + gap
+        ~reserve += portal[lblmenu2].width * portal[menu2].visible
+        ~reserve += (defwidth + gap) * portal[menu2].visible
+        endif
+		
       ~if we're showing a thing, the info and delete buttons are irrelevant, since
       ~we should be showing within a chooser, in which case there's nothing to
       ~delete and we have the description already visible
@@ -166,10 +285,31 @@
         edge = portal[info].left - 5
         endif
 
-      ~position the name on the left and let it use all available space
+      ~position the name on the left, reserving our minimum space for any portals
+      var x as number
       portal[name].left = 0
-      portal[name].width = minimum(portal[name].width,edge)
+      portal[name].width = minimum(portal[name].width,edge - portal[name].left - reserve)
+      x = portal[name].right + gap
 
+      ~setup the maximum width for our some portals, regardless of space available
+      var maxwidth as number
+      maxwidth = 150
+
+      if (portal[menu1].visible <> 0) then
+        if (portal[lblmenu1].visible <> 0) then
+          portal[lblmenu1].left = x
+          x = portal[lblmenu1].right + 4
+          endif
+        portal[menu1].left = x
+		endif
+	  
+      ~if a menu is visible, make sure it has a selection
+      if (portal[menu1].visible <> 0) then
+        if (field[usrChosen1].ischosen = 0) then
+          perform portal[menu1].setstyle[menuError]
+          endif
+        endif
+		
       ~center the name if requested or this is a show-only thing
       if (tagis[SimpleItem.CenterName] + tagis[thing.showonly] <> 0) then
         perform portal[name].centerhorz
@@ -196,8 +336,8 @@
 		
   <template
     id="raSkillPick1"
-    name="Chooser Pick"
-    compset="Simple"
+    name="Skill Pick 1"
+    compset="Skill"
     marginhorz="3"
     marginvert="2">
 
@@ -307,7 +447,235 @@
 
 		]]></header>
 		</template>
+		
+  <template
+    id="raSkillPick2"
+    name="Skill Pick 2"
+    compset="Skill"
+    marginhorz="3"
+    marginvert="2">
 
+	<portal
+      id="hdrText"
+      style="lblTitle"
+	  isheader="yes">
+      <label>
+      	<labeltext><![CDATA[
+  	       @text = hero.child[RacialHelper1].field[rhSkillHdr2].text
+      	   ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if we've been assigned a non-default width for use when showing things, adopt
+      ~that width now
+      if (ispick = 0) then
+        var size as number
+        size = tagvalue[SimpleItem.width?]
+        if (size > 0) then
+          width = size
+          endif
+        endif
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~if we're showing a thing, the info and delete buttons are irrelevant, since
+      ~we should be showing within a chooser, in which case there's nothing to
+      ~delete and we have the description already visible
+      var edge as number
+      if (ispick = 0) then
+        portal[info].visible = 0
+        portal[delete].visible = 0
+        edge = width
+      else
+        edge = portal[info].left - 5
+        endif
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge)
+
+      ~center the name if requested or this is a show-only thing
+      if (tagis[SimpleItem.CenterName] + tagis[thing.showonly] <> 0) then
+        perform portal[name].centerhorz
+        endif
+
+      ~if this is an auto-added pick, change its font to indicate that fact
+      if (ispick + !candelete >= 2) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+	  <header><![CDATA[
+		~our header height is the height of our labels
+		height = portal[name].height
+
+		~each of our header labels has the same width as the corresponding data beneath
+		portal[hdrText].width = width
+
+		~align all header labels at the bottom of the header region
+		perform portal[hdrText].alignedge[bottom,0]
+
+		]]></header>
+		</template>
+
+  <template
+    id="raSimplePick1"
+    name="Simple Pick 1"
+    compset="Simple"
+    marginhorz="3"
+    marginvert="2">
+
+	<portal
+      id="hdrText"
+      style="lblTitle"
+	  isheader="yes">
+      <label>
+      	<labeltext><![CDATA[
+  	       @text = hero.child[RacialHelper1].field[rhSimpleHdr].text
+      	   ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+      ~set up our height based on our tallest portal
+      height = portal[info].height
+
+      ~if we've been assigned a non-default width for use when showing things, adopt
+      ~that width now
+      if (ispick = 0) then
+        var size as number
+        size = tagvalue[SimpleItem.width?]
+        if (size > 0) then
+          width = size
+          endif
+        endif
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+
+      ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~if we're showing a thing, the info and delete buttons are irrelevant, since
+      ~we should be showing within a chooser, in which case there's nothing to
+      ~delete and we have the description already visible
+      var edge as number
+      if (ispick = 0) then
+        portal[info].visible = 0
+        portal[delete].visible = 0
+        edge = width
+      else
+        edge = portal[info].left - 5
+        endif
+
+      ~position the name on the left and let it use all available space
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge)
+
+      ~center the name if requested or this is a show-only thing
+      if (tagis[SimpleItem.CenterName] + tagis[thing.showonly] <> 0) then
+        perform portal[name].centerhorz
+        endif
+
+      ~if this is an auto-added pick, change its font to indicate that fact
+      if (ispick + !candelete >= 2) then
+        perform portal[name].setstyle[lblAuto]
+        endif
+      ]]></position>
+	  <header><![CDATA[
+		~our header height is the height of our labels
+		height = portal[name].height
+
+		~each of our header labels has the same width as the corresponding data beneath
+		portal[hdrText].width = width
+
+		~align all header labels at the bottom of the header region
+		perform portal[hdrText].alignedge[bottom,0]
+
+		]]></header>
+		</template>
+		
   <template
     id="raPropPick"
     name="Racial Property Pick"
@@ -437,7 +805,7 @@
       ~perform portal[lblmenuar].centervert
       ~perform portal[menuarray].centervert
       ~perform portal[checkbox].centervert
-
+	  
       ~determine whether our portals are visible; we only show them if requested
       ~Note: Remember that a non-empty tagexpr field indicates menu selection is used.
       if (field[usrCandid1].isempty <> 0) then
@@ -446,22 +814,25 @@
       elseif (field[usrLabel1].isempty <> 0) then
         portal[lblmenu1].visible = 0
         endif
+		
       if (field[usrCandid2].isempty <> 0) then
         portal[lblmenu2].visible = 0
         portal[menu2].visible = 0
       elseif (field[usrLabel2].isempty <> 0) then
         portal[lblmenu2].visible = 0
         endif
+		
       if (empty(field[usrArray].arraytext[0]) <> 0) then
         portal[lblmenuar].visible = 0
         portal[menuarray].visible = 0
       elseif (field[usrLabelAr].isempty <> 0) then
         portal[lblmenuar].visible = 0
         endif
+		
       if (field[usrChkText].isempty <> 0) then
         portal[checkbox].visible = 0
         endif
-
+	  
       ~position the delete portal on the far right and the info portal next to it
       perform portal[delete].alignedge[right,0]
       perform portal[info].alignrel[rtol,delete,-8]
@@ -577,7 +948,10 @@
     <portalref portal="raRaceAbil" />
     <portalref portal="raRaceProp" />
     <portalref portal="raChsEdge1" />
+    <portalref portal="raChsEdge2" />
     <portalref portal="raChsSkill1" />
+    <portalref portal="raChsSkill2" />
+    <portalref portal="raChsSimple1" />
 
     <!-- This script sizes and positions the layout and its child visual elements. -->
     <position><![CDATA[
@@ -590,13 +964,25 @@
       portal[raRaceAbil].visible = 1
       portal[raRaceProp].visible = 1
 	  portal[raChsEdge1].visible = 0
+	  portal[raChsEdge2].visible = 0
 	  portal[raChsSkill1].visible = 0
+	  portal[raChsSkill2].visible = 0
+	  portal[raChsSimple1].visible = 0
 	  
 	  if (hero.child[RacialHelper1].field[rhEdgeExp].isempty = 0) then
 	    portal[raChsEdge1].visible = 1
 		endif
+	  if (hero.child[RacialHelper1].field[rhEdgeExp2].isempty = 0) then
+	    portal[raChsEdge2].visible = 1
+		endif
 	  if (hero.child[RacialHelper1].field[rhSkillExp].isempty = 0) then
 	    portal[raChsSkill1].visible = 1
+		endif
+	  if (hero.child[RacialHelper1].field[rhSkillExp2].isempty = 0) then
+	    portal[raChsSkill2].visible = 1
+		endif
+	  if (hero.child[RacialHelper1].field[rhSimpleExp].isempty = 0) then
+	    portal[raChsSimple1].visible = 1
 		endif
       
       ~position and size the table to span the full layout; it will only use the
@@ -604,7 +990,10 @@
       perform portal[raRaceAbil].autoplace
       perform portal[raRaceProp].autoplace[10]
       perform portal[raChsEdge1].autoplace[10]
+      perform portal[raChsEdge2].autoplace[10]
       perform portal[raChsSkill1].autoplace[10]
+      perform portal[raChsSkill2].autoplace[10]
+      perform portal[raChsSimple1].autoplace[10]
       
       ]]></position>
 

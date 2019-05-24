@@ -10,12 +10,13 @@
   <group
     id="RacialTab"
     dynamic="yes">
-    <value id="HideRacialTab"/>  <!-- Whether an ability is selectable only during creation -->
-    <value id="EdgeSelected1"/>  <!-- Whether an ability is selectable only during creation -->
-    <value id="EdgeSelected2"/>  <!-- Whether an ability is selectable only during creation -->
-    <value id="SkillSelected1"/>  <!-- Whether an ability is selectable only during creation -->
-    <value id="SkillSelected2"/>  <!-- Whether an ability is selectable only during creation -->
-
+    <value id="HideRacialTab"/>   <!-- Hide the Racial Tab -->
+    <value id="EdgeSelected1"/>   <!-- Edge selected via edge chooser 1 -->
+    <value id="EdgeSelected2"/>   <!-- Edge selected via edge chooser 2 -->
+    <value id="SkillSelected1"/>  <!-- Skill selected via skill chooser 1 -->
+    <value id="SkillSelected2"/>  <!-- Skill selected via skill chooser 2 -->
+    <value id="SimpleSelected1"/> <!-- Simple Item selected via simple chooser 1 -->
+    <value id="SimpleSelected2"/> <!-- Simple Item selected via simple chooser 2 -->
     </group>
 
   </document>

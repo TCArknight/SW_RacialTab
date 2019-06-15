@@ -8,7 +8,16 @@
 -->
 
 <document signature="Hero Lab Data">
-
+  <fileinfo>
+    <info_author>Coordinator: TCArknight (Thomas Clegg)
+Contributors: Salcor, Father Morpheus</info_author>
+    <info_history><![CDATA[
+	06/14/19
+	Added Property chooser
+	]]></info_history>
+    <info_todo>Future enhancements:
+	XXX</info_todo>
+    </fileinfo>
   <portal
     id="raRaceAbil"
     style="tblInvis">
@@ -31,6 +40,7 @@
       showtemplate="raPropPick"
       showsortset="explicit"
       scrollable="no">
+      <list>!Hide.Ability</list>
       <headertitle><![CDATA[
         @text = "Racial Properties"
         ]]></headertitle>
@@ -143,6 +153,29 @@
         ]]></additem>
       </table_dynamic>
     </portal>	
+	
+  <!-- raChsSimple1 portal - Allows selection of Racial abilities. -->
+  <portal
+    id="raChsRacialProp1"
+    style="tblNormal">
+    <table_dynamic
+      component="RacialProp"
+      showtemplate="raPropPick"
+      choosetemplate="SimpleItem"
+	  candidatepick="RacialHelper1"
+	  candidatefield="rhRPropExp"
+	  addpick="resRacialPropAdd">
+      <list>RacialTab.RPropSelected</list>
+      <autotag group="RacialTab" tag="RPropSelected"/>
+      <description/>
+	  <headertitle><![CDATA[
+        @text = hero.child[RacialHelper1].field[rhRPropHdr].text
+        ]]></headertitle>
+      <additem><![CDATA[      
+        @text &= hero.child[RacialHelper1].field[rhRPropAdd].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>
 	
   <template
     id="raEdgePick1"
@@ -687,7 +720,7 @@
       style="lblNormal"
       showinvalid="yes">
       <label
-        field="thingname">
+        field="name">
         </label>
       </portal>
 
@@ -952,6 +985,8 @@
     <portalref portal="raChsSkill1" />
     <portalref portal="raChsSkill2" />
     <portalref portal="raChsSimple1" />
+    <portalref portal="raChsRacialProp1" />
+	
 
     <!-- This script sizes and positions the layout and its child visual elements. -->
     <position><![CDATA[
@@ -968,6 +1003,7 @@
 	  portal[raChsSkill1].visible = 0
 	  portal[raChsSkill2].visible = 0
 	  portal[raChsSimple1].visible = 0
+	  portal[raChsRacialProp1].visible = 0
 	  
 	  if (hero.child[RacialHelper1].field[rhEdgeExp].isempty = 0) then
 	    portal[raChsEdge1].visible = 1
@@ -984,7 +1020,10 @@
 	  if (hero.child[RacialHelper1].field[rhSimpleExp].isempty = 0) then
 	    portal[raChsSimple1].visible = 1
 		endif
-      
+	  if (hero.child[RacialHelper1].field[rhRPropExp].isempty = 0) then
+	    portal[raChsRacialProp1].visible = 1
+		endif
+		
       ~position and size the table to span the full layout; it will only use the
       ~vertical space that it actually needs
       perform portal[raRaceAbil].autoplace
@@ -994,7 +1033,8 @@
       perform portal[raChsSkill1].autoplace[10]
       perform portal[raChsSkill2].autoplace[10]
       perform portal[raChsSimple1].autoplace[10]
-      
+      perform portal[raChsRacialProp1].autoplace[10]
+	  
       ]]></position>
 
     </layout>

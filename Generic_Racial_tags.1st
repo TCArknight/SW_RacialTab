@@ -17,6 +17,7 @@
     <value id="SkillSelected2"/>  <!-- Skill selected via skill chooser 2 -->
     <value id="SimpleSelected1"/> <!-- Simple Item selected via simple chooser 1 -->
     <value id="SimpleSelected2"/> <!-- Simple Item selected via simple chooser 2 -->
+    <value id="RPropSelected"/> <!-- Simple Item selected via simple chooser 2 -->
     </group>
 
   </document>

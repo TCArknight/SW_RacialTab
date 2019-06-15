@@ -184,7 +184,36 @@
       type="derived"
 	  defvalue="0">
 	  </field>
+
+    <field
+      id="rhRPropAdd"
+      name="Racial Property AddItem Header"
+      type="derived"
+	  maxlength="500">
+	  </field>
+	  
+    <field
+      id="rhRPropHdr"
+      name="Racial Property Header"
+      type="derived"
+	  maxlength="500">
+	  </field> 
+	  
+    <field
+      id="rhRPropExp"
+      name="Racial Property Expression"
+      type="derived"
+	  maxlength="500">
+	  </field> 
+
+    <field
+      id="rhRPropCst"
+      name="Racial Property Cost"
+      type="derived"
+	  defvalue="0">
+	  </field>	  
 	  
     </component>
+
 	
   </document>

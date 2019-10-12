@@ -212,7 +212,34 @@
       type="derived"
 	  defvalue="0">
 	  </field>	  
+
+    <field
+      id="rhHinAdd"
+      name="Racial Hind AddItem Header"
+      type="derived"
+	  maxlength="500">
+	  </field>
 	  
+    <field
+      id="rhHinHdr"
+      name="Racial Hind Expression Header"
+      type="derived"
+	  maxlength="500">
+	  </field> 
+	  
+    <field
+      id="rhHinExp"
+      name="Racial Hind Expression"
+      type="derived"
+	  maxlength="500">
+	  </field>
+
+    <field
+      id="rhHinCst"
+      name="Racial Hind Cost 1"
+      type="derived"
+	  defvalue="0">
+	  </field>	  
     </component>
 
 	

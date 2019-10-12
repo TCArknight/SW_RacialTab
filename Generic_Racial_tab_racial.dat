@@ -12,6 +12,12 @@
     <info_author>Coordinator: TCArknight (Thomas Clegg)
 Contributors: Salcor, Father Morpheus</info_author>
     <info_history><![CDATA[
+    09/30/19
+	Added Hindrance chooser
+	
+	07/14/19
+	Hide tab if Creature since creature aboilities show on the Abilities tab
+	
 	06/14/19
 	Added Property chooser
 	]]></info_history>
@@ -80,13 +86,34 @@ Contributors: Salcor, Father Morpheus</info_author>
 	  candidatepick="RacialHelper1"
 	  candidatefield="rhEdgeExp2"
 	  headertemplate="raEdgePick1"
-	  addpick="resRaceEdge1">
+	  addpick="resRaceEdge2">
       <list>RacialTab.EdgeSelected2</list>
       <autotag group="RacialTab" tag="EdgeSelected2"/>
       <autotag group="Helper" tag="FreeEdge"/>
       <description/>
       <additem><![CDATA[      
         @text &= hero.child[RacialHelper1].field[rhEdgeAdd2].text
+        ]]></additem>
+      </table_dynamic>
+    </portal>
+	
+  <!-- raChsHindrance1 portal - Allows selection of Racial Hindrances. -->
+  <portal
+    id="raChsHindrance1"
+    style="tblNormal">
+    <table_dynamic
+      component="none"
+      showtemplate="raHinPick1"
+      choosetemplate="SimpleItem"
+	  candidatepick="RacialHelper1"
+	  candidatefield="rhHinExp"
+	  headertemplate="raHinPick1"
+	  addpick="resRaceHind1">
+      <list>RacialTab.HindSelected1</list>
+      <autotag group="RacialTab" tag="HindSelected1"/>
+      <description/>
+      <additem><![CDATA[      
+        @text &= hero.child[RacialHelper1].field[rhHinAdd].text
         ]]></additem>
       </table_dynamic>
     </portal>
@@ -351,6 +378,119 @@ Contributors: Salcor, Father Morpheus</info_author>
       ~if this is an auto-added pick, change its font to indicate that fact
       if (ispick + !candelete >= 2) then
         perform portal[name].setstyle[lblAuto]
+        endif
+	  
+      ]]></position>
+	  <header><![CDATA[
+		~our header height is the height of our labels
+		height = portal[name].height
+
+		~each of our header labels has the same width as the corresponding data beneath
+		portal[hdrText].width = width
+
+		~align all header labels at the bottom of the header region
+		perform portal[hdrText].alignedge[bottom,0]
+
+		]]></header>
+		</template>
+		
+  <template
+    id="raHinPick1"
+    name="Chooser Pick"
+    compset="Hindrance"
+    marginhorz="3"
+    marginvert="2">
+
+	<portal
+      id="hdrText"
+      style="lblTitle"
+	  isheader="yes">
+      <label>
+      	<labeltext><![CDATA[
+  	       @text = hero.child[RacialHelper1].field[rhHinHdr].text
+      	   ]]></labeltext>
+        </label>
+      </portal>
+	  
+    <portal
+      id="name"
+      style="lblNormal"
+      showinvalid="yes">
+      <label
+        field="name">
+        </label>
+      </portal>
+
+    <portal
+      id="info"
+      style="actInfo">
+      <action
+        action="info">
+        </action>
+      <mouseinfo/>
+      </portal>
+
+    <portal
+      id="delete"
+      style="actDelete"
+      tiptext="Click to delete this item">
+      <action
+        action="delete">
+        </action>
+      </portal>
+
+    <position><![CDATA[
+	  height = portal[info].height
+
+      ~if we've been assigned a non-default width for use when showing things, adopt
+      ~that width now
+      if (ispick = 0) then
+        var size as number
+        size = tagvalue[SimpleItem.width?]
+        if (size > 0) then
+          width = size
+          endif
+        endif
+
+      ~if this is a "sizing" calculation, we're done
+      doneif (issizing <> 0)
+
+      ~position our tallest portal at the top
+      portal[info].top = 0
+
+      ~center the other portals vertically
+      perform portal[name].centervert
+      perform portal[delete].centervert
+
+       ~position the delete portal on the far right
+      perform portal[delete].alignedge[right,0]
+
+      ~position the info portal to the left of the delete button
+      perform portal[info].alignrel[rtol,delete,-8]
+
+      ~determine our effective right edge, allowing for the buttons above
+      var edge as number
+      edge = portal[info].left - 10
+		
+      ~if we're showing a thing, the info and delete buttons are irrelevant, since
+      ~we should be showing within a chooser, in which case there's nothing to
+      ~delete and we have the description already visible
+      var edge as number
+      if (ispick = 0) then
+        portal[info].visible = 0
+        portal[delete].visible = 0
+        edge = width
+      else
+        edge = portal[info].left - 5
+        endif
+
+      ~position the name on the left, reserving our minimum space for any portals
+      portal[name].left = 0
+      portal[name].width = minimum(portal[name].width,edge)
+		
+      ~center the name if requested or this is a show-only thing
+      if (tagis[SimpleItem.CenterName] + tagis[thing.showonly] <> 0) then
+        perform portal[name].centerhorz
         endif
 	  
       ]]></position>
@@ -795,8 +935,10 @@ Contributors: Salcor, Father Morpheus</info_author>
       id="summary"
       style="lblSmlLeft"
       showinvalid="yes">
-      <label
-        field="summary">
+      <label>
+        <labeltext><![CDATA[
+          @text = field[summary].text
+          ]]></labeltext>
         </label>
       </portal>
 	  
@@ -982,6 +1124,7 @@ Contributors: Salcor, Father Morpheus</info_author>
     <portalref portal="raRaceProp" />
     <portalref portal="raChsEdge1" />
     <portalref portal="raChsEdge2" />
+    <portalref portal="raChsHindrance1" />
     <portalref portal="raChsSkill1" />
     <portalref portal="raChsSkill2" />
     <portalref portal="raChsSimple1" />
@@ -1000,6 +1143,7 @@ Contributors: Salcor, Father Morpheus</info_author>
       portal[raRaceProp].visible = 1
 	  portal[raChsEdge1].visible = 0
 	  portal[raChsEdge2].visible = 0
+	  portal[raChsHindrance1].visible = 0
 	  portal[raChsSkill1].visible = 0
 	  portal[raChsSkill2].visible = 0
 	  portal[raChsSimple1].visible = 0
@@ -1010,6 +1154,9 @@ Contributors: Salcor, Father Morpheus</info_author>
 		endif
 	  if (hero.child[RacialHelper1].field[rhEdgeExp2].isempty = 0) then
 	    portal[raChsEdge2].visible = 1
+		endif	  
+	  if (hero.child[RacialHelper1].field[rhHinExp].isempty = 0) then
+	    portal[raChsHindrance1].visible = 1
 		endif
 	  if (hero.child[RacialHelper1].field[rhSkillExp].isempty = 0) then
 	    portal[raChsSkill1].visible = 1
@@ -1030,6 +1177,7 @@ Contributors: Salcor, Father Morpheus</info_author>
       perform portal[raRaceProp].autoplace[10]
       perform portal[raChsEdge1].autoplace[10]
       perform portal[raChsEdge2].autoplace[10]
+      perform portal[raChsHindrance1].autoplace[10]
       perform portal[raChsSkill1].autoplace[10]
       perform portal[raChsSkill2].autoplace[10]
       perform portal[raChsSimple1].autoplace[10]
@@ -1046,7 +1194,7 @@ Contributors: Salcor, Father Morpheus</info_author>
     marginhorz="5"
     marginvert="5"
     order="115">
-    <live>!RacialTab.HideRacialTab</live>
+    <live>!(RacialTab.HideRacialTab|Hero.Creature)</live>
     <layoutref layout="racial"/>
     <position><![CDATA[
       ]]></position>

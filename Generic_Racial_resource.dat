@@ -26,6 +26,7 @@
 	var reqSel as number
 	reqSel = 0
 	reqSel += #resmax[resRaceEdge1] + #resmax[resRaceEdge2]
+	reqSel += #resmax[resRaceHind1]
 	reqSel += #resmax[resRaceSkill1] + #resmax[resRaceSkill2]
 	reqSel += #resmax[resRaceSimple1] + #resmax[resRaceSimple2]
 	reqSel += #resmax[resRacialPropAdd]
@@ -46,6 +47,14 @@
 	    field[rhEdgeCst2].value += 1
 	    nexteach
       perform #resspent[resRaceEdge2,+,field[rhEdgeCst2].value,"Race"]
+	endif
+
+	if (#resmax[resRaceHind1] <> 0) then 
+	  ~Count Edges with RacialTab.HindSelected1 tag
+      foreach pick in hero from Hindrance where "RacialTab.HindSelected1"
+	    field[rhHinCst].value += 1
+	    nexteach
+      perform #resspent[resRaceHind1,+,field[rhHinCst].value,"Race"]
 	endif
 	
 	if (#resmax[resRaceSkill1] <> 0) then
@@ -134,6 +143,44 @@
   <thing
     id="resRaceEdge2"
     name="Racial Edges 2"
+    compset="Resource">
+    <fieldval field="resMax" value="0"/>
+	
+    <!-- Automatically add the resource to every actor -->
+    <tag group="Helper" tag="Bootstrap"/>
+
+    <!-- If the resource is underspent, report a validation error -->
+    <evalrule index="1" phase="Validate" priority="5000" message="Resource underspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't underspent, we're valid
+      validif (field[resLeft].value <= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+ 
+    <!-- If the resource is overspent, report a validation error -->
+    <evalrule index="2" phase="Validate" priority="5000" message="Resource overspent"><![CDATA[
+      ~if we have a non-PC and this resource is impacted, we're always valid
+      validif (tagis[Helper.NPCImpact] + !hero.tagis[Hero.PC] >= 2)
+
+      ~if we aren't overspent, we're valid
+      validif (field[resLeft].value >= 0)
+
+      ~mark associated tabs as invalid
+      container.panelvalid[racial] = 0
+
+      ]]></evalrule>
+	  
+	</thing>
+
+  <!-- Racial - Bonus Abilities resource  -->
+  <thing
+    id="resRaceHind1"
+    name="Racial Hindrances 1"
     compset="Resource">
     <fieldval field="resMax" value="0"/>
 	

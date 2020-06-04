@@ -6,6 +6,7 @@
 -->
 
 <document signature="Hero Lab Structure">
+
   <!-- TCA: Tags -->
   <group
     id="RacialTab"
@@ -21,4 +22,23 @@
     <value id="RPropSelected"/> <!-- Simple Item selected via simple chooser 2 -->
     </group>
 
+  <!-- TCA: Sources -->
+  <source
+    id="TCArknight"
+    name="TCArknight - Additional Material"
+	parent="UserParent"
+    selectable="no"
+    sortorder="5"
+    description="Additional material from TCArknight">
+    </source>
+  <source
+    id="ShowRacialTab"
+    name="Show Racial Tab"
+	parent="TCArknight"
+    selectable="yes"
+    reportable="yes"
+    sortorder="10"
+    description="Racial Tab from TCArknight">
+    </source>
+	
   </document>

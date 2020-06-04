@@ -12,6 +12,9 @@
     <info_author>Coordinator: TCArknight (Thomas Clegg)
 Contributors: Salcor, Father Morpheus</info_author>
     <info_history><![CDATA[
+    06/04/20
+	Added source to show tab or not
+	
     09/30/19
 	Added Hindrance chooser
 	
@@ -1194,7 +1197,7 @@ Contributors: Salcor, Father Morpheus</info_author>
     marginhorz="5"
     marginvert="5"
     order="115">
-    <live>!(RacialTab.HideRacialTab|Hero.Creature)</live>
+    <live>source.ShowRacialTab &amp; !(RacialTab.HideRacialTab|Hero.Creature)</live>
     <layoutref layout="racial"/>
     <position><![CDATA[
       ]]></position>
